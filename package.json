@@ -1,0 +1,39 @@
+{
+  "name": "express-boilerplate_andrewtyl",
+  "version": "1.0.0",
+  "description": "A boilerplate for express. Please follow instructions in readme before starting project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --require test/setup.js",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "predeploy": "npm audit",
+    "deploy": "git push heroku master"
+  },
+  "keywords": [],
+  "author": "Andrew Jessen-Tyler",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thinkful-ei-firefly/express-boilerplate_andrewtyl.git"
+  },
+  "engines": {
+    "node": "12.9.1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.1.0",
+    "express": "^4.17.1",
+    "helmet": "^3.20.1",
+    "knex": "^0.19.4",
+    "morgan": "^1.9.1",
+    "pg": "^7.12.1",
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.1",
+    "supertest": "^4.0.2"
+  }
+}
