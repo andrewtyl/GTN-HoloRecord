@@ -6,7 +6,7 @@ const googleAuthRouter = express.Router();
 
 googleAuthRouter
     .get('/validateToken', jsonBodyParser, (req, res, next) => {
-        let userInfo = { token: req.headers.authorization, email: req.query.email, googleId: req.query.googleId };
+        let userInfo = { token: req.query.iDtoken, email: req.query.email, googleId: req.query.googleId };
 
         for (const [key, value] of Object.entries(userInfo)) {
             if (value == null) {

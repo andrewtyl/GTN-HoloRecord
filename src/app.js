@@ -7,6 +7,8 @@ const app = express()
 const googleAuthRouter = require('./routes/googleAuthRouter');
 const userRouter = require('./routes/userRouter');
 const itemsRouter = require('./routes/itemsRouter');
+const gtnRouter = require('./routes/gtnRouter');
+const dbRouter = require('./routes/dbRouter')
 
 const morganOption = (NODE_ENV === 'production')
     ? 'tiny'
@@ -28,7 +30,7 @@ app.use(function errorHandler(error, req, res, next) {
 })
 
 app.get('/api', (req, res) => {
-    res.send('Hello, world!')
+    res.send('This is the GTN-HoloRecord API. Please see https://github.com/andrewtyl/GTN-HoloRecord/blob/master/README.md for more information.')
 })
 
 app.use('/api/googleAuth', googleAuthRouter)
@@ -36,5 +38,9 @@ app.use('/api/googleAuth', googleAuthRouter)
 app.use('/api/users', userRouter)
 
 app.use('/api/items', itemsRouter)
+
+app.use('/api/db', dbRouter)
+
+app.use('/api/gtn', gtnRouter)
 
 module.exports = app

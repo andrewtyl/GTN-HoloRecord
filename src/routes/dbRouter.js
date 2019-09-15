@@ -1,7 +1,7 @@
 const { DB_URL } = require('../config')
 const express = require('express');
 const jsonBodyParser = express.json();
-const userRouter = express.Router();
+const dbRouter = express.Router();
 const knex = require('knex')
 
 const knexInstance = knex({
@@ -9,7 +9,7 @@ const knexInstance = knex({
     connection: DB_URL,
 })
 
-userRouter
+dbRouter
     .get('/exists', jsonBodyParser, (req, res, next) => {
         if (req.query.googleId) {
             knexInstance.from('user_list').select('*').where('user_google_id', req.query.googleId).first()
@@ -85,4 +85,4 @@ userRouter
 
     })
 
-module.exports = userRouter;
+module.exports = dbRouter;
