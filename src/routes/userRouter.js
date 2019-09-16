@@ -1,4 +1,4 @@
-const { DB_URL } = require('../config')
+const { KNEX_CON } = require('../config')
 const express = require('express');
 const jsonBodyParser = express.json();
 const userRouter = express.Router();
@@ -6,7 +6,7 @@ const knex = require('knex')
 
 const knexInstance = knex({
     client: 'pg',
-    connection: DB_URL,
+    connection: KNEX_CON,
 })
 
 userRouter
