@@ -34,7 +34,7 @@ itemsRouter
             return res.status(404).json({ error: `'itemName' missing from body` })
         }
     })
-    .post('/newItem', jsonBodyParser, (req, postRes, next) => {
+    .post('/entry', jsonBodyParser, (req, postRes, next) => {
         let newItem = { item_name: req.body.item_name, vendor_cost: req.body.vendor_cost }
 
         if (newItem.item_name == null) {
