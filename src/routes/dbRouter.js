@@ -10,29 +10,52 @@ const knexInstance = knex({
 })
 
 dbRouter
-    .get('/exists', jsonBodyParser, (req, res, next) => {
-        if (req.query.googleId) {
-            knexInstance.from('user_list').select('*').where('user_google_id', req.query.googleId).first()
-                .then(result => {
-                    console.log(result)
-                    if (result && (result.user_google_id === req.query.googleId)) {
-                        return res.status(200).json(result)
-                    }
-                    else {
-                        return res.status(404).json({ error: `User does not exist` })
-                    }
-                })
-                .catch(
-                    error => {
-                        return postRes.status(500).json({ error: `Database insertion failed. Please check if user already exists at GET /api/users/exists or contact support.` });
-                    }
-                )
+    .get('/dbInfo', jsonBodyParser, (req, res, next) => {
+        if (req.body.db_id) {
+            let search_db_id = req.body.db_id
+            if (typeof search_db_id == "number") {
+                search_db_id = search_db_id.toString()
+            }
+
+            if (typeof search_db_id !== "string") {
+                return res.status(400).json({ error: "db_id should be a number" })
+            }
+            else {
+                knexInstance.from('db_list').select('*').where('db_id', search_db_id).first()
+                    .then(result => {
+                        if (result && (result.db_id == search_db_id)) {
+                            return res.status(200).json(result)
+                        }
+                        else {
+                            return res.status(404).json({ error: `This database does not exist` })
+                        }
+                    })
+                    .catch(
+                        error => {
+                            console.error(`ERROR AT /src/routes/dbRouter.js GET /db/dbInfo while connecting with Knex. Error details: ${error}`)
+                            return res.status(500).json({ error: `Database search failed. Please try again or contact support.` });
+                        }
+                    )
+            }
         }
         else {
-            return res.status(404).json({ error: `'googleId' query missing. Please resubmit with proper query.` })
+            return res.status(404).json({ error: `'db_Id' missing from body` })
         }
     })
-    .post('/newUser', jsonBodyParser, (req, postRes, next) => {
+    .get('/allUsersDB', jsonBodyParser, (req, res, next) => {
+        if (req.body.user_id) {
+            knexInstance.from('db_list').select('*').where('owner_user_id', req.body.user_id)
+                .then(searchRes => { return res.status(200).json(searchRes) })
+                .catch(error => {
+                    console.error(`ERROR AT /src/routes/dbRouter.js GET /users/exists while connecting with Knex. Error details: ${error}`)
+                    return res.status(500).json({ error: 'Database search failed. Please try again or contact support.' })
+                })
+        }
+        else {
+            return res.status(400).json({ error: `'user_id' missing from body` })
+        }
+    })
+    .post('/newDB', jsonBodyParser, (req, postRes, next) => {
         let newUser = { user_google_id: req.body.user_google_id, user_email: req.body.user_email, tos_agreement: req.body.tos_agreement, age_confirmation: req.body.age_confirmation, user_name: req.body.user_name }
 
         for (const [key, value] of Object.entries(newUser)) {
@@ -42,7 +65,7 @@ dbRouter
         }
 
         if ((typeof newUser.user_google_id !== 'number') && (typeof newUser.user_google_id !== 'string')) {
-            return postRes.status(400).json({ error: `'user_google_id' must be a string or number.` })
+            return postRes.status(400).json({ error: `'user_google_id' must be a string.` })
         }
 
         if (typeof newUser.user_google_id == 'number') {
@@ -73,6 +96,7 @@ dbRouter
                             postRes.status(201).json(searchRes)
                         }
                         else {
+                            console.error(`ERROR AT /src/routes/dbRouter.js GET /db/newDB while connecting with Knex. Error details: ${error}`)
                             postRes.status(500).json({ error: `User may have not been successfully posted to database. Try GET /api/users/exists or contact support.` })
                         }
                     })

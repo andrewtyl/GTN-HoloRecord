@@ -1,6 +1,7 @@
 node_modules/
 .env
 example.app.yaml
+example.env
 README.md
 express-boilerplate.md 
 sql_scripts/

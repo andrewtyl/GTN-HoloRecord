@@ -1,4 +1,4 @@
-knexcon_config = process.env.ELEPHANT_SQL_ADDRESS
+knexcon_config = process.env.SQL_ADDRESS
 
 module.exports = {
   PORT: process.env.PORT || 8000,

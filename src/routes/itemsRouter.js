@@ -33,40 +33,28 @@ itemsRouter
         }
     })
     .post('/newItem', jsonBodyParser, (req, postRes, next) => {
-        let newItem = { item_name: req.query.itemName, vendor_cost: req.query.vendorCost}
+        let newItem = { item_name: req.query.itemName, vendor_cost: req.query.vendorCost }
 
         if (newItem.item_name == null) {
             return postRes.status(400).json({ error: `Missing itemName in request body` })
         }
 
         if (typeof newItem.item_name !== 'string') {
-            return postRes.status(400).json({ error: `'itemName' must be a string.`})
+            return postRes.status(400).json({ error: `'itemName' must be a string.` })
         }
 
         if ((newItem.vendor_cost !== null) && (typeof newItem.vendor_cost !== 'number')) {
-            return postRes.status(400).json({error: `'vendorCost must' be a number.`})
+            return postRes.status(400).json({ error: `'vendorCost must' be a number.` })
         }
 
 
         knexInstance.insert(newItem).into('item_list').returning('*')
             .then(insertRes => {
-                knexInstance.from('item_list').select('*').where('item_name', newUser.item_name).first()
-                    .then(searchRes => {
-                        console.log(searchRes)
-                        if (searchRes && (searchRes.item_name == newUser.item_name)) {
-                            postRes.status(201).json(searchRes)
-                        }
-                        else {
-                            postRes.status(500).json({ error: `Item may have not been successfully posted to database. Try GET /api/item/exists or contact support.` })
-                        }
-                    })
+                postRes.status(201).json(insertRes)
             })
-            .catch(
-                error => {
-                    return postRes.status(500).json({ error: `Database insertion failed. Please check if item already exists at GET /api/items/exists or contact support.` });
-                }
-            )
-
+            .catch(error => {
+                postRes.status(500).json({ error: "Issue posting to database. Make sure date format is correct (YYYY-MM-DD), then try again or contact support. Additional feedback below.", errorMessage: error })
+            })
     })
 
 module.exports = itemsRouter;

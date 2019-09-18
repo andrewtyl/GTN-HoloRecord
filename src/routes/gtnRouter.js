@@ -10,78 +10,94 @@ const knexInstance = knex({
 })
 
 gtnRouter
-    .get('/exists', jsonBodyParser, (req, res, next) => {
-        if (req.query.googleId) {
-            knexInstance.from('user_list').select('*').where('user_google_id', req.query.googleId).first()
-                .then(result => {
-                    console.log(result)
-                    if (result && (result.user_google_id === req.query.googleId)) {
-                        return res.status(200).json(result)
-                    }
-                    else {
-                        return res.status(404).json({ error: `User does not exist` })
-                    }
-                })
-                .catch(
-                    error => {
-                        return postRes.status(500).json({ error: `Database insertion failed. Please check if user already exists at GET /api/users/exists or contact support.` });
-                    }
-                )
+    .get('/entries', jsonBodyParser, (req, res, next) => {
+        entrySearch = {
+            db_id: req.body.db_id,
+            item_id: req.body.item_id
         }
-        else {
-            return res.status(404).json({ error: `'googleId' query missing. Please resubmit with proper query.` })
-        }
-    })
-    .post('/newUser', jsonBodyParser, (req, postRes, next) => {
-        let newUser = { user_google_id: req.body.user_google_id, user_email: req.body.user_email, tos_agreement: req.body.tos_agreement, age_confirmation: req.body.age_confirmation, user_name: req.body.user_name }
 
-        for (const [key, value] of Object.entries(newUser)) {
+        for (const [key, value] of Object.entries(entrySearch)) {
+            if (value == null) {
+                return res.status(400).json({ error: `Missing ${key} in request body` })
+            }
+        }
+
+        if (typeof entrySearch.db_id !== 'string') {
+            return res.status(400).json({ error: 'db_id should be a string' })
+        }
+
+
+        if (typeof entrySearch.item_id !== 'string') {
+            return res.status(400).json({ error: 'item_id should be a string' })
+        }
+
+        knexInstance.from('gtn_prices').select('*').where(entrySearch)
+            .then(searchRes => {
+                return res.status(200).json(searchRes)
+            })
+            .catch(error => {
+                return res.status(500).json({ error: 'Database search failed. Please try again or contact support.' })
+            })
+
+    })
+    .post('/newEntry', jsonBodyParser, (req, postRes, next) => {
+        let newEntry = { user_id: req.body.user_id, db_id: req.body.db_id, item_id: req.body.item_id, data_date: req.body.data_date, gtn_price: req.body.gtn_price }
+
+        for (const [key, value] of Object.entries(newEntry)) {
             if (value == null) {
                 return postRes.status(400).json({ error: `Missing ${key} in request body` })
             }
         }
 
-        if ((typeof newUser.user_google_id !== 'number') && (typeof newUser.user_google_id !== 'string')) {
-            return postRes.status(400).json({ error: `'user_google_id' must be a string or number.` })
+        if (((typeof newEntry.user_id) !== "string") && ((typeof newEntry.user_id) !== "number")) {
+            return postRes.status(400).json({ error: "'user_id' should be a string." })
         }
 
-        if (typeof newUser.user_google_id == 'number') {
-            newUser.user_google_id = newUser.user_google_id.toString()
+        if ((typeof newEntry.user_id) == "number") {
+            newEntry.user_id = newEntry.user_id.toString()
         }
 
-        if ((typeof newUser.user_email !== 'string')) {
-            return postRes.status(400).json({ error: `'user_email' must be a string.` })
+        if (((typeof newEntry.db_id) !== "string") && ((typeof newEntry.db_id) !== "number")) {
+            return postRes.status(400).json({ error: "'db_id' should be a string." })
         }
 
-        if ((typeof newUser.user_name !== 'string')) {
-            return postRes.status(400).json({ error: `'user_name' must be a string.` })
+        if ((typeof newEntry.db_id) == "number") {
+            newEntry.db_id = newEntry.db_id.toString()
         }
 
-        if ((typeof newUser.tos_agreement !== 'boolean')) {
-            return postRes.status(400).json({ error: `'tos_agreement' must be a boolean.` })
+        if (((typeof newEntry.item_id) !== "string") && ((typeof newEntry.item_id) !== "number")) {
+            return postRes.status(400).json({ error: "'item_id' should be a string." })
         }
 
-        if ((typeof newUser.age_confirmation !== 'boolean')) {
-            return postRes.status(400).json({ error: `'age_confirmation' must be a boolean.` })
+        if ((typeof newEntry.item_id) == "number") {
+            newEntry.item_id = newEntry.item_id.toString()
         }
-        knexInstance.insert(newUser).into('user_list').returning('*')
+
+        if (((typeof newEntry.gtn_price) !== "string") && ((typeof newEntry.gtn_price) !== "number")) {
+            return postRes.status(400).json({ error: "'gtn_price' should be a string." })
+        }
+
+        if ((typeof newEntry.gtn_price) == "number") {
+            newEntry.gtn_price = newEntry.gtn_price.toString()
+        }
+
+        if (((typeof newEntry.data_date) !== "string") && ((typeof newEntry.data_date) !== "number")) {
+            return postRes.status(400).json({ error: "'data_date' should be a string in the format of 'YYYY-MM-DD'." })
+        }
+
+        if ((typeof newEntry.data_date) == "number") {
+            newEntry.data_date = newEntry.data_date.toString()
+        }
+
+        //Todo: impliment some method to check that date format is correct for input to server
+
+        knexInstance.insert(newEntry).into('gtn_prices').returning('*')
             .then(insertRes => {
-                knexInstance.from('user_list').select('*').where('user_google_id', newUser.user_google_id).first()
-                    .then(searchRes => {
-                        console.log(searchRes)
-                        if (searchRes && (searchRes.user_google_id == newUser.user_google_id)) {
-                            postRes.status(201).json(searchRes)
-                        }
-                        else {
-                            postRes.status(500).json({ error: `User may have not been successfully posted to database. Try GET /api/users/exists or contact support.` })
-                        }
-                    })
+                postRes.status(201).json(insertRes)
             })
-            .catch(
-                error => {
-                    return postRes.status(500).json({ error: `Database insertion failed. Please check if user already exists at GET /api/users/exists or contact support.` });
-                }
-            )
+            .catch(error => {
+                postRes.status(500).json({ error: "Issue posting to database. Make sure date format is correct (YYYY-MM-DD), then try again or contact support. Additional feedback below.", errorMessage: error })
+            })
 
     })
 
