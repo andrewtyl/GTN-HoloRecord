@@ -3,6 +3,7 @@ const express = require('express');
 const jsonBodyParser = express.json();
 const dbRouter = express.Router();
 const knex = require('knex')
+const cuid = require('cuid')
 
 const knexInstance = knex({
     client: 'pg',
