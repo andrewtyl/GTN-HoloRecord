@@ -23,3 +23,5 @@ POST /users/newUser, body: { user_google_id: number, user_email: string, tos_agr
 GET /db/dbInfo, body: {db_id: number} - Checks if a primary key of db_id exists in the db_list table of the postgres database.
 GET /db/allUsersDB, body: {user_id: number} - Returns all db from the db_list table of the postgres database that have the owner_user_id the same as the inputted user_id.
 POST /db/newDB, body: {owner_user_id: number, server_name: string} - Inserts the new db into the db_list table of the postgres database.
+GET /users/exists, body: {item_name: string} - Checks if this item name is present in the item_list table of the postgres database. It is highly reccomended to use the exact item name as it appears in the SWTOR game.
+POST /db/newDB, body: {item_name: string, vendor_cost: number (optional)} - Inserts the new item into the item_list table of the postgres database. It is highly reccomended to use the exact item name as it appears in the SWTOR game.

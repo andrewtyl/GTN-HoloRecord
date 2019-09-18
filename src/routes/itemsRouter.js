@@ -11,50 +11,67 @@ const knexInstance = knex({
 
 itemsRouter
     .get('/exists', jsonBodyParser, (req, res, next) => {
-        if (req.query.itemName) {
-            knexInstance.from('item_list').select('*').where('item_name', req.query.itemName).first()
+        if (req.body.item_name) {
+            if (typeof google_id !== "string") { res.status(400).json({ error: "item_name should be a string" }) }
+
+            knexInstance.from('item_list').select('*').where('item_name', req.body.item_name).first()
                 .then(result => {
-                    console.log(result)
-                    if (result && (result.item_name === req.query.itemName)) {
+                    if (result && (result.item_name === req.query.item_name)) {
                         return res.status(200).json(result)
                     }
                     else {
-                        return res.status(404).json({ error: `Item does not exist` })
+                        return res.status(404).json({ error: `Item could not be found or does not exist` })
                     }
                 })
                 .catch(
                     error => {
-                        return postRes.status(500).json({ error: `Database access failed. Please try again or contact support.` });
+                        console.error(`ERROR AT /src/routes/itemRouter.js GET /items/exists while connecting with Knex. Error details: ${error}`)
+                        return res.status(500).json({ error: `Database search failed. Please try again later or contact support.`, errorMessage: error });
                     }
                 )
         }
         else {
-            return res.status(404).json({ error: `'itemName' query missing. Please resubmit with proper query.` })
+            return res.status(404).json({ error: `'itemName' missing from body` })
         }
     })
     .post('/newItem', jsonBodyParser, (req, postRes, next) => {
-        let newItem = { item_name: req.query.itemName, vendor_cost: req.query.vendorCost }
+        let newItem = { item_name: req.body.item_name, vendor_cost: req.body.vendor_cost }
 
         if (newItem.item_name == null) {
-            return postRes.status(400).json({ error: `Missing itemName in request body` })
+            return postRes.status(400).json({ error: `Missing item_name in body` })
         }
 
         if (typeof newItem.item_name !== 'string') {
-            return postRes.status(400).json({ error: `'itemName' must be a string.` })
+            return postRes.status(400).json({ error: `'item_name' must be a string.` })
         }
 
         if ((newItem.vendor_cost !== null) && (typeof newItem.vendor_cost !== 'number')) {
-            return postRes.status(400).json({ error: `'vendorCost must' be a number.` })
+            return postRes.status(400).json({ error: `'vendor_cost' must be a number.` })
         }
 
 
-        knexInstance.insert(newItem).into('item_list').returning('*')
-            .then(insertRes => {
-                postRes.status(201).json(insertRes)
+        knexInstance.from('item_list').select('*').where('item_name', newItem.item_name).first()
+            .then(result => {
+                if (!result) {
+                    knexInstance.insert(newItem).into('item_list').returning('*')
+                        .then(insertRes => {
+                            postRes.status(201).json(insertRes)
+                        })
+                        .catch(error => {
+                            console.error(`ERROR AT /src/routes/itemRouter.js POST /items/newItem. Error details: ${error}`)
+                            postRes.status(500).json({ error: "Issue posting to database. Make sure all your body values are using valid syntax, then try again or contact support. Additional feedback below.", errorMessage: error })
+                        })
+                }
+                else {
+                    res.status(400).json('Item already exists.')
+                }
             })
-            .catch(error => {
-                postRes.status(500).json({ error: "Issue posting to database. Make sure date format is correct (YYYY-MM-DD), then try again or contact support. Additional feedback below.", errorMessage: error })
-            })
+            .catch(
+                error => {
+                    console.error(`ERROR AT /src/routes/itemRouter.js POST /items/newItem while connecting with Knex. Error details: ${error}`)
+                    return postRes.status(500).json({ error: `Database search failed. Please try again later or contact support.`, errorMessage: error });
+                }
+            )
     })
 
 module.exports = itemsRouter;
