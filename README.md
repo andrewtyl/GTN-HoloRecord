@@ -21,3 +21,5 @@ GET /googleAuth/validateToken, body: {access_token: string, email: string, googl
 GET /users/exists, body: {google_id: number} - Checks if this google id is assigned to a user in the user_list table of the postgres database.
 POST /users/newUser, body: { user_google_id: number, user_email: string, tos_agreement: boolean, age_confirmation: boolean, user_name: string } - Inserts the new user into the user_list table of the postgres database.
 GET /db/dbInfo, body: {db_id: number} - Checks if a primary key of db_id exists in the db_list table of the postgres database.
+GET /db/allUsersDB, body: {user_id: number} - Returns all db from the db_list table of the postgres database that have the owner_user_id the same as the inputted user_id.
+POST /db/newDB, body: {owner_user_id: number, server_name: string} - Inserts the new db into the db_list table of the postgres database.
