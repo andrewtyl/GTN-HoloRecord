@@ -10,7 +10,7 @@ const knexInstance = knex({
 })
 
 gtnRouter
-    .get('/entries', jsonBodyParser, (req, res, next) => {
+    .post('/getEntries', jsonBodyParser, (req, res, next) => {
         entrySearch = {
             db_id: req.body.db_id,
             item_id: req.body.item_id
@@ -44,7 +44,7 @@ gtnRouter
             })
 
     })
-    .get('/entry', jsonBodyParser, (req, res, next) => {
+    .post('/getEntry', jsonBodyParser, (req, res, next) => {
         let entrySearch = { db_id: req.body.db_id, item_id: req.body.item_id, data_date: req.body.data_date }
         for (const [key, value] of Object.entries(entrySearch)) {
             if (value == null) {

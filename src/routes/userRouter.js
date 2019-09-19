@@ -10,7 +10,7 @@ const knexInstance = knex({
 })
 
 userRouter
-    .get('/exists', jsonBodyParser, (req, res, next) => {
+    .post('/exists', jsonBodyParser, (req, res, next) => {
         if (req.body.google_id) {
             let google_id = req.body.google_id
             if(typeof google_id == "number") {

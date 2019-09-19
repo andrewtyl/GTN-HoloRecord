@@ -10,7 +10,7 @@ const knexInstance = knex({
 })
 
 itemsRouter
-    .get('/exists', jsonBodyParser, (req, res, next) => {
+    .post('/exists', jsonBodyParser, (req, res, next) => {
         if (req.body.item_name) {
             if (typeof google_id !== "string") { res.status(400).json({ error: "item_name should be a string" }) }
 

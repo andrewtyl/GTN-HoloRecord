@@ -11,7 +11,7 @@ const knexInstance = knex({
 })
 
 dbRouter
-    .get('/dbInfo', jsonBodyParser, (req, res, next) => {
+    .post('/getDBInfo', jsonBodyParser, (req, res, next) => {
         if (req.body.db_id) {
             let search_db_id = req.body.db_id
             if (typeof search_db_id == "number") {
@@ -43,7 +43,7 @@ dbRouter
             return res.status(404).json({ error: `'db_Id' missing from body` })
         }
     })
-    .get('/allUsersDB', jsonBodyParser, (req, res, next) => {
+    .post('/getAllUsersDB', jsonBodyParser, (req, res, next) => {
         if (req.body.user_id) {
             let search_user_id = req.body.user_id;
             if (typeof search_user_id == "number") {
