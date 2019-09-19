@@ -71,7 +71,7 @@ userRouter
         if ((typeof newUser.age_confirmation !== 'boolean')) {
             return postRes.status(400).json({ error: `'age_confirmation' must be a boolean.` })
         }
-        knexInstance.from('user_list').select('*').where('user_google_id', newUser.google_id).first()
+        knexInstance.from('user_list').select('*').where('user_google_id', newUser.user_google_id).first()
             .then(result => {
                 if (!result) {
                     knexInstance.insert(newUser).into('user_list').returning('*')
