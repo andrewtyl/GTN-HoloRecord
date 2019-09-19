@@ -1,7 +1,7 @@
 {
   "name": "express-boilerplate_andrewtyl",
-  "version": "1.0.0",
-  "description": "A boilerplate for express. Please follow instructions in readme before starting project.",
+  "version": "0.1.0b",
+  "description": "Backend Express Server for connecting to a postgresql database. Designed for GTN-ShadowFeed and other similar projects.",
   "main": "index.js",
   "scripts": {
     "test": "mocha --require test/setup.js",
