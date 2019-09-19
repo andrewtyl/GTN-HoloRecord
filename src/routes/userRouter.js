@@ -19,9 +19,9 @@ userRouter
             else if (typeof google_id == "string") {}
             else {res.status(400).json({error: "google_id should be a number"})}
 
-            knexInstance.from('user_list').select('*').where('user_google_id', req.body.google_id).first()
+            knexInstance.from('user_list').select('*').where('user_google_id', google_id).first()
                 .then(result => {
-                    if (result && (result.user_google_id === req.query.google_id)) {
+                    if (result && (result.user_google_id === google_id)) {
                         return res.status(200).json(result)
                     }
                     else {
