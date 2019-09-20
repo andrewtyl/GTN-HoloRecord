@@ -67,11 +67,11 @@ dbRouter
         }
     })
     .post('/newDB', jsonBodyParser, (req, postRes, next) => {
-        let newDB = { owner_user_id: req.body.owner_user_id, server_name: req.body.server_name, db_key }
-        newDB.db_key = cuid()
-        while (newDB.db_key.length < 500) {
-            newDB.db_key = newDB.db_key + cuid()
+        let gen_db_key = cuid()
+        while (gen_db_key.length < 500) {
+            gtn_db_key = gen_db_key + cuid()
         }
+        let newDB = { owner_user_id: req.body.owner_user_id, server_name: req.body.server_name, db_key: gen_db_key }
 
         for (const [key, value] of Object.entries(newUser)) {
             if (value == null) {

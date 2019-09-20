@@ -1,7 +1,7 @@
 # GTN HoloRecord
 
 - Author: Andrew Jessen-Tyler
-- Version: 0.1.0b
+- Version: 0.1.0f
 
 ## ENV Variables Required
 
