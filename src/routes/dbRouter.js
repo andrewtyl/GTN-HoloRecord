@@ -5,13 +5,9 @@ const dbRouter = express.Router();
 const knex = require('knex')
 const cuid = require('cuid')
 
-const knexInstance = knex({
-    client: 'pg',
-    connection: KNEX_CON,
-})
-
 dbRouter
     .post('/getDBInfo', jsonBodyParser, (req, res, next) => {
+        const knexInstance = req.app.get('knexInstance')
         if (req.body.db_id) {
             let search_db_id = req.body.db_id
             if (typeof search_db_id == "number") {
@@ -44,6 +40,7 @@ dbRouter
         }
     })
     .post('/getAllUsersDB', jsonBodyParser, (req, res, next) => {
+        const knexInstance = req.app.get('knexInstance')
         if (req.body.user_id) {
             let search_user_id = req.body.user_id;
             if (typeof search_user_id == "number") {
@@ -67,6 +64,7 @@ dbRouter
         }
     })
     .post('/newDB', jsonBodyParser, (req, postRes, next) => {
+        const knexInstance = req.app.get('knexInstance')
         let gen_db_key = cuid()
         while (gen_db_key.length < 500) {
             gtn_db_key = gen_db_key + cuid()

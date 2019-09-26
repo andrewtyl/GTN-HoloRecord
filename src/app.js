@@ -19,6 +19,13 @@ app.use(morgan(morganOption))
 app.use(helmet())
 app.use(cors())
 
+const knexConnection = knex({
+    client: 'pg',
+    connection: KNEX_CON,
+})
+
+app.set('knexInstance', knexConnection)
+
 app.get('/', (req, res) => {
     res.send('This is the GTN-HoloRecord API. Please see https://github.com/andrewtyl/GTN-HoloRecord/blob/master/README.md for more information.')
 })

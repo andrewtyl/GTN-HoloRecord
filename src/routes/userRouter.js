@@ -4,13 +4,9 @@ const jsonBodyParser = express.json();
 const userRouter = express.Router();
 const knex = require('knex')
 
-const knexInstance = knex({
-    client: 'pg',
-    connection: KNEX_CON,
-})
-
 userRouter
     .post('/exists', jsonBodyParser, (req, res, next) => {
+        const knexInstance = req.app.get('knexInstance')
         if (req.body.google_id) {
             let google_id = req.body.google_id
             if(typeof google_id == "number") {
@@ -40,6 +36,7 @@ userRouter
         }
     })
     .post('/newUser', jsonBodyParser, (req, postRes, next) => {
+        const knexInstance = req.app.get('knexInstance')
         let newUser = { user_google_id: req.body.user_google_id, user_email: req.body.user_email, tos_agreement: req.body.tos_agreement, age_confirmation: req.body.age_confirmation, user_name: req.body.user_name }
 
         for (const [key, value] of Object.entries(newUser)) {

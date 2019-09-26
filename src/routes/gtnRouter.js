@@ -4,13 +4,9 @@ const jsonBodyParser = express.json();
 const gtnRouter = express.Router();
 const knex = require('knex')
 
-const knexInstance = knex({
-    client: 'pg',
-    connection: KNEX_CON,
-})
-
 gtnRouter
     .post('/getEntries', jsonBodyParser, (req, res, next) => {
+        const knexInstance = req.app.get('knexInstance')
         entrySearch = {
             db_id: req.body.db_id,
             item_id: req.body.item_id
@@ -45,6 +41,7 @@ gtnRouter
 
     })
     .post('/getEntry', jsonBodyParser, (req, res, next) => {
+        const knexInstance = req.app.get('knexInstance')
         let entrySearch = { db_id: req.body.db_id, item_id: req.body.item_id, data_date: req.body.data_date }
         for (const [key, value] of Object.entries(entrySearch)) {
             if (value == null) {
@@ -91,6 +88,7 @@ gtnRouter
             })
     })
     .delete('/entry', jsonBodyParser, (req, mainRes, next) => {
+        const knexInstance = req.app.get('knexInstance')
         let entry_id = req.body.entry_id
         if (entry_id == null) {
             mainRes.send(400).json("Missing entry_id in the request body")
@@ -125,6 +123,7 @@ gtnRouter
             })
     })
     .post('/entry', jsonBodyParser, (req, postRes, next) => {
+        const knexInstance = req.app.get('knexInstance')
         let newEntry = { user_id: req.body.user_id, db_id: req.body.db_id, item_id: req.body.item_id, data_date: req.body.data_date, gtn_price: req.body.gtn_price }
 
         for (const [key, value] of Object.entries(newEntry)) {

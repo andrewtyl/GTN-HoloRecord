@@ -4,13 +4,9 @@ const jsonBodyParser = express.json();
 const itemsRouter = express.Router();
 const knex = require('knex')
 
-const knexInstance = knex({
-    client: 'pg',
-    connection: KNEX_CON,
-})
-
 itemsRouter
     .post('/exists', jsonBodyParser, (req, res, next) => {
+        const knexInstance = req.app.get('knexInstance')
         if (req.body.item_name) {
             if (typeof google_id !== "string") { res.status(400).json({ error: "item_name should be a string" }) }
 
@@ -35,6 +31,7 @@ itemsRouter
         }
     })
     .post('/entry', jsonBodyParser, (req, postRes, next) => {
+        const knexInstance = req.app.get('knexInstance')
         let newItem = { item_name: req.body.item_name, vendor_cost: req.body.vendor_cost }
 
         if (newItem.item_name == null) {
