@@ -174,7 +174,8 @@ gtnRouter
 
         knexInstance.from('gtn_prices').select('*').where({ db_id: newEntry.db_id, item_id: newEntry.item_id, data_date: newEntry.data_date })
             .then(searchRes => {
-                if (!searchRes) {
+                console.log(searchRes)
+                if (!(searchRes[0])) {
                     knexInstance.insert(newEntry).into('gtn_prices').returning('*')
                         .then(insertRes => {
                             return postRes.status(201).json(insertRes)
