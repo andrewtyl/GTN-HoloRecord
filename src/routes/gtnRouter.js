@@ -18,13 +18,13 @@ gtnRouter
             }
         }
 
-        if ((typeof entrySearch.db_id !== 'string') || (typeof entrySearch.db_id !== "number")) {
+        if ((typeof entrySearch.db_id !== 'string') && (typeof entrySearch.db_id !== "number")) {
             return res.status(400).json({ error: 'db_id should be a number' })
         }
         if (typeof entrySearch.db_id === "string") {
             entrySearch.db_id = entrySearch.db_id.toString()
         }
-        if ((typeof entrySearch.item_id !== 'string') || (typeof entrySearch.item_id !== "number")) {
+        if ((typeof entrySearch.item_id !== 'string') && (typeof entrySearch.item_id !== "number")) {
             return res.status(400).json({ error: 'item_id should be a number' })
         }
         if (typeof entrySearch.item_id === "string") {
