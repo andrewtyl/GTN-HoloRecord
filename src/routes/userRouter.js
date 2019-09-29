@@ -35,6 +35,36 @@ userRouter
             return res.status(400).json({ error: `'google_id' missing from body` })
         }
     })
+    .post('/name', jsonBodyParser, (req, res, next) => {
+        const knexInstance = req.app.get('knexInstance')
+        if (req.body.user_id) {
+            let user_id = req.body.user_id
+            if(typeof user_id == "number") {
+                user_id = user_id.toString()
+            }
+            else if (typeof user_id == "string") {}
+            else {res.status(400).json({error: "user_id should be a number"})}
+
+            knexInstance.from('user_list').select('*').where('user_id', user_id).first()
+                .then(result => {
+                    if (result && (result.user_id.toString() === user_id)) {
+                        return res.status(200).json({"user_id": result.user_id, "user_name": result.user_name})
+                    }
+                    else {
+                        return res.status(404).json({ error: `User could not be found or does not exist` })
+                    }
+                })
+                .catch(
+                    error => {
+                        console.error(`ERROR AT /src/routes/userRouter.js GET /users/info while connecting with Knex. Error details: ${error}`)
+                        return res.status(500).json({ error: `Database search failed. Please try again later or contact support.`, errorMessage: error });
+                    }
+                )
+        }
+        else {
+            return res.status(400).json({ error: `'user_id' missing from body` })
+        }
+    })
     .post('/newUser', jsonBodyParser, (req, postRes, next) => {
         const knexInstance = req.app.get('knexInstance')
         let newUser = { user_google_id: req.body.user_google_id, user_email: req.body.user_email, tos_agreement: req.body.tos_agreement, age_confirmation: req.body.age_confirmation, user_name: req.body.user_name }
