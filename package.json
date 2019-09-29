@@ -6,16 +6,14 @@
   "scripts": {
     "test": "mocha --require test/setup.js",
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
-    "predeploy": "npm audit",
-    "deploy": "git push heroku master"
+    "dev": "nodemon src/server.js"
   },
   "keywords": [],
   "author": "Andrew Jessen-Tyler",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/thinkful-ei-firefly/express-boilerplate_andrewtyl.git"
+    "url": "https://github.com/andrewtyl/GTN-HoloRecord.git"
   },
   "engines": {
     "node": "12.9.1"
